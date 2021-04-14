@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
@@ -10,34 +12,59 @@ using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
+    // Product varlığını Db'ye gönderirken veya getirirken gerçekleştireceğimiz işlemleri barındıran class. 
+    
+    // Bu class'ı kullanabilmemiz için veri erişim yöntemini parametre olarak vermeliyiz.
+    // Manager metodları, kullandığımız veri erişim yönteminin içerisindeki metodları döndürür.
+    
+
     public class ProductManager : IProductService
     {
-        IProductDal _productDal; // istersem entity Framework istersem inmemory istersem başka bir tekniği kullanacağım.
-        public ProductManager(IProductDal productDal) // ProductManager'daki bir metodu kullanmak için hangi veri erişim katmanını kullanacağını söyle.
+        IProductDal _productDal; // IProductDal tanımladık çünkü: veriye eriştiğimiz class'ların parent'ı yani onların referansını tutabildiği için.
+        public ProductManager(IProductDal productDal) // Hangi nesneye ulaşmak istiyorsak onun dal ile biten classını parametre vermeliyiz.
         {
             _productDal = productDal; // ctor parametresinde söylediğin veri erişim tekniğini kullanacağım.
         }
+         
+        public IResult Add(Product product)
+        {
+            if (product.ProductName.Length<2)
+            {
+                return new ErrorResult(Messages.ProductNameInvalid);
+            }
+             _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAdded);
+        }
 
-
-        public List<Product> GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
             // Koşulları yazarız. en son alttaki şekilde veriyi döndürürüz.
-            return _productDal.GetAll(); // söylediğin veri erişim tekniği içerisindeki metodu kullanacağım.
+            if (DateTime.Now.Hour==22)
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime); // neden null Liste döndürdük: frontend tarafında bu metodun bir liste döndürdüğü belli olsun diye.
+            }
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed); // söylediğin veri erişim tekniği içerisindeki ilgili metodu kullanacağım.
         }
 
-        public List<Product> GetAllByCategoryId(int id)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
-            return _productDal.GetAll(p => p.CategoryId == id);
+            return new SuccessDataResult<List<Product>> (_productDal.GetAll(p => p.CategoryId == id),Messages.ProductsListedByCategory);
         }
 
-        public List<Product> GetByUnitPrice(decimal min, decimal max)
+        public IDataResult<Product> GetById(int productId)
         {
-            return _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max);
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
         }
 
-        public List<ProductDetailDto> GetProductDetails()
+        public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
         {
-            return _productDal.GetProductDetails();
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
+        }
+
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
+        {
+            
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
     }
 }

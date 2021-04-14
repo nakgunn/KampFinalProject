@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    // Context: Db tabloları ile Projemizin Class'larını ilişkilendirdiğimiz class
-    public class NorthwindContext : DbContext  // DbContext EntityFramework nesnesidir.
+    // Context: Db tabloları ile Projemizin Class'larını ilişkilendirdiğimiz ve Db'ye erişirken kullandığımız class
+    public class NorthwindContext : DbContext  // DbContext EntityFramework base class'ıdır.
     {
         // Projemiz hangi veritabanıyla ilişkili olacak bunu belirtiğimiz metot : OnConfiguring
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

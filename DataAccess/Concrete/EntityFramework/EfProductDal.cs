@@ -12,6 +12,12 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
+    // Product varlığını getirirken diğer varlıklarla ilişki kurup getirebiliriz.
+    // Linq ile ilişkilendirme işlemini yaparız. Bu ilişkiyi kurmak için bir Dto varlığımızın olması gerekir.
+
+    // EfEntityRepositoryBase içindeki metodları implemente etmedik. Çünkü bir interface değil. Metodları otomatik varmış gibi davranır.
+    // Yalnızca IProductDal içerisindeki metodları implemente ediyoruz.
+    // Bu class hem IProductDal'dan hem de EfEntityRepository'den CRUD operasyonlarını kazanır.
     public class EfProductDal : EfEntityRepositoryBase<Product, NorthwindContext>, IProductDal
     {
         public List<ProductDetailDto> GetProductDetails()

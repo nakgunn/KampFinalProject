@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
+    // Dto - Farklı tablolarda bulunan kolonları tek bir varlık olarak kullanmak istediğimizde oluşturduğumuz class.
+    // Tablolar arası ilişkileri DataAccess->Concrete içerisindeki ProductDal class'ında tanımlarız.
     public class ProductDetailDto:IDto
     {
         public int ProductId { get; set; }

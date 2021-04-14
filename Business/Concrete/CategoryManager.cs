@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
+    // İçerisinde Category varlığını istediğimiz şekilde 
     public class CategoryManager : ICategoryService
     {
         ICategoryDal _categoryDal;

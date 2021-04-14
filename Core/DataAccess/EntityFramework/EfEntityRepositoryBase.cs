@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Core.DataAccess.EntityFramework
 {
+    // Entity Framework ile eriştiğimiz veritabanı nesneleri üzerinde gerçekleştireceğimiz CRUD operasyonları birbirini tekrar ettiğinden dolayı bir Generic Base Class oluşturduk.
+    // Bu class'ı implemente eden class'lar hangi entity üzerinde işlem yapılacağını -TEntity-, hangi veritabanı bağlantı class'ını -context- kullanacak belirtmek zorundayız.
+    // Bu class IEntityRepository içerisinde bulunan metotları implemente eder. Metodların parametrelerinde TEntity ile verdiğimiz varlık kullanılır. Çünkü metodlar arasındaki tek fark burasıdır. Bunu IEntityRepository'de generic yapmıştık. 
     public class EfEntityRepositoryBase<TEntity, TContext> : IEntityRepository<TEntity>
         where TEntity:class,IEntity, new()
         where TContext: DbContext, new()
@@ -30,11 +33,12 @@ namespace Core.DataAccess.EntityFramework
         {
             using (TContext context = new TContext())
             {
-                var deletedEntity = context.Entry(entity); // product tipindeki contextin varlığının referansını yakala -> addedEntity'e ver.
+                var deletedEntity = context.Entry(entity); 
                 deletedEntity.State = EntityState.Deleted; // addedEntity'nin silinecek nesne olduğunu set ettik.
                 context.SaveChanges();
             }
         }
+
         // Tek data döndürecek ve filtre zorunluluğu var
         public TEntity Get(Expression<Func<TEntity, bool>> filter)
         {
@@ -45,7 +49,7 @@ namespace Core.DataAccess.EntityFramework
         }
 
 
-        // Data listesi döndürecek ve filtre zorunlu değil.
+        // Filtre belirtmediğimizde tüm verileri getirir. Belirttiğimizde ise filtreye göre getirir.
         public List<TEntity> GetAll(Expression<Func<TEntity, bool>> filter = null)
         {
             using (TContext context = new TContext())
@@ -57,7 +61,6 @@ namespace Core.DataAccess.EntityFramework
             }
 
         }
-
 
 
         public void Update(TEntity entity)

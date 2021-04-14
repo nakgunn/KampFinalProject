@@ -1,4 +1,5 @@
 ﻿using Business.Concrete;
+using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
@@ -19,6 +20,7 @@ namespace ConsoleUI
             //CategoryTest();
             // DTO - Data Transformation Object
 
+          
         }
 
         private static void CategoryTest()
@@ -34,7 +36,7 @@ namespace ConsoleUI
         {
             ProductManager productManager = new ProductManager(new InMemoryProductDal());
 
-            List<Product> products = productManager.GetAll();
+            List<Product> products = productManager.GetAll().Data;
 
             List<Category> categories = new List<Category> { new Category { CategoryId = 1, CategoryName = "Mutfak" }, new Category { CategoryId = 2, CategoryName = "Teknoloji" } };
 
@@ -55,10 +57,19 @@ namespace ConsoleUI
         {
             ProductManager productManager = new ProductManager(new EfProductDal()); // Parametrede hangi data access tekniğini kullanacağını verdik.
 
-            foreach (var product in productManager.GetProductDetails()) // productManager'ın kendisi bir liste döndürmüyor. İçerisindeki GetAll() metodu bir product listesi döndürüyor.
+            var result = productManager.GetProductDetails();
+            if (result.Success)
             {
+                foreach (var product in productManager.GetProductDetails().Data) 
+                {
                 Console.WriteLine(  product.ProductId  + " / "+ product.ProductName + " / " + product.CategoryName + " / " + product.UnitsInStock );
+                }
             }
+            else
+            {
+                Console.WriteLine(result.Message);
+            }
+          
         }
     }
 
